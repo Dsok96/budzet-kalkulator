@@ -1,215 +1,237 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Zaawansowany Kalkulator Budżetu</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #eef2f5;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 1000px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-    h1, h2 {
-      text-align: center;
-      color: #2c3e50;
-    }
-    label {
-      font-weight: bold;
-    }
-    input[type="number"], input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    .expense-item {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .expense-item input[type="text"] {
-      flex: 2;
-    }
-    .expense-item input[type="number"] {
-      width: 150px;
-    }
-    .expense-item button {
-      background: crimson;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    button.action {
-      background: #007bff;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      margin-top: 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .result {
-      margin-top: 30px;
-      font-size: 20px;
-      padding: 20px;
-      border-radius: 10px;
-      background-color: #e9f7ef;
-      color: #2e7d32;
-    }
-    .summary, .chart-container {
-      margin-top: 30px;
-    }
-    .summary ul {
-      list-style: none;
-      padding: 0;
-    }
-    .summary li {
-      padding: 6px 0;
-    }
-    canvas {
-      max-width: 600px;
-      margin: 0 auto;
-      display: block;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Finansowy Asystent – Kalkulator i Porady</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; background: #f9f9f9; color: #222;
+  }
+  header {
+    background: #0052cc; color: white;
+    padding: 1em 2em;
+    display: flex; justify-content: space-between; align-items: center;
+    position: sticky; top: 0; z-index: 1000;
+  }
+  header h1 {
+    margin: 0; font-size: 1.5em;
+  }
+  nav a {
+    color: white; text-decoration: none; margin-left: 1.2em;
+    font-weight: 600; cursor: pointer;
+    transition: color 0.3s;
+  }
+  nav a:hover, nav a.active {
+    color: #ffd54f;
+  }
+  main {
+    max-width: 900px; margin: 2em auto; background: white;
+    padding: 2em; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  section {
+    display: none;
+  }
+  section.active {
+    display: block;
+  }
+  h2 {
+    color: #0052cc;
+    margin-top: 0;
+  }
+  label {
+    display: block;
+    margin-top: 1em;
+    font-weight: 600;
+  }
+  input[type=number], input[type=email], textarea {
+    width: 100%; padding: 0.5em; margin-top: 0.3em;
+    border: 1px solid #ccc; border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+  }
+  button {
+    margin-top: 1.5em;
+    padding: 0.75em;
+    background: #0052cc;
+    border: none; color: white; font-size: 1em;
+    cursor: pointer; border-radius: 4px;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #003d99;
+  }
+  #result {
+    margin-top: 1em;
+    font-weight: 700;
+    font-size: 1.2em;
+    color: #007700;
+  }
+  .ad-placeholder {
+    margin: 2em 0;
+    padding: 1em;
+    background: #eee;
+    border: 2px dashed #bbb;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+  }
+  ul.faq-list {
+    list-style-type: disc;
+    padding-left: 1.2em;
+  }
+  ul.faq-list li {
+    margin-bottom: 1em;
+  }
+  footer {
+    background: #222;
+    color: white;
+    text-align: center;
+    padding: 1em;
+    margin-top: 3em;
+    font-size: 0.9em;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Zaawansowany Kalkulator Budżetu</h1>
 
-    <label for="income">Dochód miesięczny (zł):</label>
-    <input type="number" id="income" placeholder="np. 8000" />
+<header>
+  <h1>Finansowy Asystent</h1>
+  <nav>
+    <a href="#" data-section="calculator" class="active">Kalkulator</a>
+    <a href="#" data-section="tips">Porady</a>
+    <a href="#" data-section="faq">FAQ</a>
+    <a href="#" data-section="contact">Kontakt</a>
+  </nav>
+</header>
 
-    <div id="expenses">
-      <h2>Wydatki</h2>
-      <div class="expense-item">
-        <input type="text" placeholder="Nazwa (np. Jedzenie)" />
-        <input type="number" placeholder="Kwota (zł)" />
-        <button onclick="removeExpense(this)">Usuń</button>
-      </div>
+<main>
+  <section id="calculator" class="active">
+    <h2>Kalkulator Budżetu Domowego</h2>
+    <form id="budgetForm">
+      <label for="income">Przychody miesięczne (zł):</label>
+      <input type="number" id="income" min="0" required />
+      <label for="expenses">Wydatki miesięczne (zł):</label>
+      <input type="number" id="expenses" min="0" required />
+      <label for="savingsGoal">Cel oszczędności miesięcznych (zł):</label>
+      <input type="number" id="savingsGoal" min="0" value="0" />
+      <button type="submit">Oblicz bilans</button>
+    </form>
+    <div id="result"></div>
+
+    <div class="ad-placeholder">
+      Miejsce na reklamy Google AdSense
     </div>
+  </section>
 
-    <button class="action" onclick="addExpense()">+ Dodaj kategorię</button>
-    <button class="action" onclick="calculate()">Oblicz budżet</button>
+  <section id="tips">
+    <h2>Porady Finansowe</h2>
+    <ul>
+      <li>Planuj budżet z wyprzedzeniem, uwzględniając wszystkie stałe wydatki.</li>
+      <li>Staraj się oszczędzać minimum 10% dochodów miesięcznie.</li>
+      <li>Unikaj niepotrzebnych zakupów impulsywnych — zaplanuj listę zakupów.</li>
+      <li>Monitoruj swoje wydatki, korzystając z aplikacji lub kalkulatorów online.</li>
+      <li>Zainwestuj w edukację finansową — wiedza to podstawa stabilności.</li>
+    </ul>
+  </section>
 
-    <div id="result" class="result" style="display:none;"></div>
+  <section id="faq">
+    <h2>Najczęściej zadawane pytania (FAQ)</h2>
+    <ul class="faq-list">
+      <li><strong>Jak działa kalkulator budżetu?</strong><br> Wprowadzasz swoje miesięczne przychody, wydatki i cel oszczędności, a kalkulator pokazuje Twój bilans i podpowiada, czy jesteś na dobrej drodze.</li>
+      <li><strong>Czy kalkulator jest darmowy?</strong><br> Tak, jest to darmowe narzędzie online dostępne bez logowania.</li>
+      <li><strong>Czy moje dane są bezpieczne?</strong><br> Wszystkie obliczenia odbywają się lokalnie w przeglądarce, nie zbieramy żadnych danych.</li>
+      <li><strong>Jak mogę się z Wami skontaktować?</strong><br> Skorzystaj z zakładki Kontakt na stronie.</li>
+    </ul>
+  </section>
 
-    <div id="summary" class="summary" style="display:none;">
-      <h2>Podsumowanie</h2>
-      <ul id="summary-list"></ul>
-    </div>
+  <section id="contact">
+    <h2>Kontakt</h2>
+    <p>Masz pytania lub sugestie? Napisz do nas:</p>
+    <form id="contactForm">
+      <label for="email">Twój email:</label>
+      <input type="email" id="email" required />
+      <label for="message">Wiadomość:</label>
+      <textarea id="message" rows="4" required></textarea>
+      <button type="submit">Wyślij</button>
+    </form>
+    <div id="contactResult"></div>
+  </section>
+</main>
 
-    <div class="chart-container">
-      <canvas id="expenseChart"></canvas>
-    </div>
-  </div>
+<footer>
+  <p>© 2025 Finansowy Asystent</p>
+</footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    function addExpense() {
-      const container = document.getElementById("expenses");
-      const row = document.createElement("div");
-      row.className = "expense-item";
+<script>
+  // Nawigacja - pokaz/ukryj sekcje
+  const navLinks = document.querySelectorAll('nav a');
+  const sections = document.querySelectorAll('main section');
 
-      const nameInput = document.createElement("input");
-      nameInput.type = "text";
-      nameInput.placeholder = "Nazwa kategorii";
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = link.getAttribute('data-section');
 
-      const amountInput = document.createElement("input");
-      amountInput.type = "number";
-      amountInput.placeholder = "Kwota (zł)";
+      // Usuń active z linków i sekcji
+      navLinks.forEach(l => l.classList.remove('active'));
+      sections.forEach(s => s.classList.remove('active'));
 
-      const removeButton = document.createElement("button");
-      removeButton.textContent = "Usuń";
-      removeButton.onclick = () => row.remove();
+      // Aktywuj kliknięty link i sekcję
+      link.classList.add('active');
+      document.getElementById(target).classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
 
-      row.appendChild(nameInput);
-      row.appendChild(amountInput);
-      row.appendChild(removeButton);
+  // Kalkulator budżetu
+  document.getElementById('budgetForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const income = parseFloat(document.getElementById('income').value);
+    const expenses = parseFloat(document.getElementById('expenses').value);
+    const savingsGoal = parseFloat(document.getElementById('savingsGoal').value);
+    const resultDiv = document.getElementById('result');
 
-      container.appendChild(row);
+    if (isNaN(income) || isNaN(expenses) || isNaN(savingsGoal)) {
+      resultDiv.textContent = 'Proszę podać poprawne liczby.';
+      resultDiv.style.color = 'red';
+      return;
     }
 
-    function removeExpense(button) {
-      button.parentElement.remove();
+    const balance = income - expenses - savingsGoal;
+
+    if (balance > 0) {
+      resultDiv.style.color = 'green';
+      resultDiv.textContent = `Bilans po uwzględnieniu celu oszczędności: +${balance.toFixed(2)} zł. Możesz spokojnie oszczędzać!`;
+    } else if (balance === 0) {
+      resultDiv.style.color = '#555';
+      resultDiv.textContent = `Bilans jest na zero — uważaj na nieprzewidziane wydatki.`;
+    } else {
+      resultDiv.style.color = 'red';
+      resultDiv.textContent = `Bilans jest ujemny: ${balance.toFixed(2)} zł. Musisz zmniejszyć wydatki lub cel oszczędności.`;
+    }
+  });
+
+  // Kontakt (tylko frontend)
+  document.getElementById('contactForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
+    const contactResult = document.getElementById('contactResult');
+
+    if (!email || !message) {
+      contactResult.style.color = 'red';
+      contactResult.textContent = 'Proszę uzupełnić wszystkie pola.';
+      return;
     }
 
-    function calculate() {
-      const income = parseFloat(document.getElementById("income").value) || 0;
-      const expenseItems = document.querySelectorAll(".expense-item");
-      const summaryList = document.getElementById("summary-list");
-      summaryList.innerHTML = "";
+    // Tu można podpiąć backend do wysyłania maili (np. EmailJS, Formspree itp.)
+    contactResult.style.color = 'green';
+    contactResult.textContent = 'Dziękujemy za wiadomość! Skontaktujemy się wkrótce.';
+    e.target.reset();
+  });
+</script>
 
-      let totalExpenses = 0;
-      const labels = [], data = [];
-
-      expenseItems.forEach(item => {
-        const name = item.children[0].value || "Bez nazwy";
-        const amount = parseFloat(item.children[1].value) || 0;
-        totalExpenses += amount;
-
-        labels.push(name);
-        data.push(amount);
-
-        const percent = income ? ((amount / income) * 100).toFixed(1) : 0;
-        const li = document.createElement("li");
-        li.textContent = `${name}: ${amount.toFixed(2)} zł (${percent}%)`;
-        summaryList.appendChild(li);
-      });
-
-      const savings = income - totalExpenses;
-      const resultDiv = document.getElementById("result");
-      resultDiv.textContent =
-        savings >= 0
-          ? `Oszczędzasz: ${savings.toFixed(2)} zł`
-          : `Masz deficyt: ${Math.abs(savings).toFixed(2)} zł`;
-      resultDiv.style.color = savings >= 0 ? "green" : "red";
-      resultDiv.style.display = "block";
-      document.getElementById("summary").style.display = "block";
-
-      renderChart(labels, data);
-    }
-
-    let chart;
-    function renderChart(labels, data) {
-      const ctx = document.getElementById('expenseChart').getContext('2d');
-      if (chart) chart.destroy();
-
-      chart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Wydatki',
-            data,
-            backgroundColor: [
-              '#007bff','#28a745','#ffc107','#dc3545','#17a2b8','#6f42c1','#fd7e14','#20c997'
-            ]
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }
-      });
-    }
-  </script>
 </body>
 </html>
