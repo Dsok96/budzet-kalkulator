@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Kalkulator budżetu domowego - oblicz swoje miesięczne wydatki i oszczędności online.">
+  <title>Kalkulator Budżetu Domowego</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+    header, footer {
+      background: #2e86de;
+      color: #fff;
+      padding: 1em;
+      text-align: center;
+    }
+    main {
+      max-width: 600px;
+      margin: 2em auto;
+      padding: 1em;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      color: #2e86de;
+    }
+    label {
+      display: block;
+      margin-top: 1em;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.2em;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 1.5em;
+      padding: 0.75em;
+      width: 100%;
+      background: #2e86de;
+      color: #fff;
+      border: none;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .result {
+      margin-top: 2em;
+      font-size: 1.2em;
+    }
+    .policy {
+      font-size: 0.9em;
+      margin-top: 2em;
+    }
+    footer a {
+      color: #fff;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Kalkulator Budżetu</h1>
+  </header>
+
+  <main>
+    <h2>Oblicz swój miesięczny bilans</h2>
+    <form id="budgetForm">
+      <label>
+        Przychód miesięczny (zł):
+        <input type="number" id="income" required />
+      </label>
+      <label>
+        Wydatki miesięczne (zł):
+        <input type="number" id="expenses" required />
+      </label>
+      <button type="submit">Oblicz</button>
+    </form>
+
+    <div class="result" id="result"></div>
+
+    <div class="policy">
+      <p><strong>Polityka prywatności:</strong> Nie zbieramy żadnych danych. Twoje obliczenia pozostają tylko na Twoim urządzeniu.</p>
+      <p>Masz pytania? Skontaktuj się: <a href="mailto:kontakt@mojastrona.pl">kontakt@mojastrona.pl</a></p>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Kalkulator Budżetu
+  </footer>
+
+  <script>
+    document.getElementById('budgetForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const income = parseFloat(document.getElementById('income').value);
+      const expenses = parseFloat(document.getElementById('expenses').value);
+      const result = income - expenses;
+      const output = document.getElementById('result');
+
+      if (!isNaN(result)) {
+        output.textContent = result >= 0
+          ? `Twoje oszczędności: ${result.toFixed(2)} zł`
+          : `Masz deficyt: ${Math.abs(result).toFixed(2)} zł`;
+      } else {
+        output.textContent = 'Wprowadź poprawne dane.';
+      }
+    });
+  </script>
+</body>
+</html>
